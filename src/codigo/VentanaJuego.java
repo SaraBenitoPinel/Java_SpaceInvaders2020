@@ -17,37 +17,52 @@ import javax.swing.Timer;
  * @author jorgecisneros
  */
 public class VentanaJuego extends javax.swing.JFrame {
+
     //LO QUE QUEREMOS QUE MIDA EL ANCHO Y EL LARGO DE LA PANTALLA
     static int ANCHOPANTALLA = 800;
     static int ALTOPANTALLA = 600;
     int filasMarcianos = 5;
     int columnasMarcianos = 10;
+    int contador = 0;
     BufferedImage buffer = null;
-    //HILO DE EJECUCION NUEVO QUE SE ENCARGA DE REFRESCAR EL CONTENIDO DE LA PANTALLA (BUCLE DE ANIMACION DEL JUEGO)
-    Timer temporizador = new Timer (10, new ActionListener() {
+    Marciano miMarciano = new Marciano(ANCHOPANTALLA);
+    //HILO DE EJECUCION NUEVO QUE SE ENCARGA DE REFRESCAR EL CONTENIDO DE LA PANTALLA 
+    //(BUCLE DE ANIMACION DEL JUEGO)
+    Timer temporizador = new Timer(10, new ActionListener() {
         @Override //SOBRESCRIBIR
         public void actionPerformed(ActionEvent e) {
             //CODIGO DE LA ANIMACION
             bucleDelJuego();
         }
     });
-    private void bucleDelJuego(){
-    //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
-    //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
+
+    private void bucleDelJuego() {
+        //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
+        //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
         Graphics2D g2 = (Graphics2D) buffer.getGraphics();
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
+        contador ++;
         //DIBUJO DE GOLPE TODO EL BUFFER SOBRE EL JPANEL
+        if (contador < 50) {
+            g2.drawImage(miMarciano.imagen1, 10, 10, null);
+        } else if (contador < 100) {
+            g2.drawImage(miMarciano.imagen2, 10, 10, null);
+        } else {
+            contador = 0;
+        }
         g2 = (Graphics2D) jPanel1.getGraphics();
         g2.drawImage(buffer, 0, 0, null);
-}
+
+    }
+
     /**
      * Creates new form VentanaJuego
      */
     public VentanaJuego() {
         initComponents();
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
-        buffer= (BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);
+        buffer = (BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);
         buffer.createGraphics();
         //ARRANCA EL TEMPORIZADOR PARA QUE EMPIECE EL JUEGO
         temporizador.start();
