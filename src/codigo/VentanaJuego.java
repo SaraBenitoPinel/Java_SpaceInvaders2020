@@ -26,6 +26,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     int contador = 0;
     BufferedImage buffer = null;
     Marciano miMarciano = new Marciano(ANCHOPANTALLA);
+    Nave minave = new Nave();
     //HILO DE EJECUCION NUEVO QUE SE ENCARGA DE REFRESCAR EL CONTENIDO DE LA PANTALLA 
     //(BUCLE DE ANIMACION DEL JUEGO)
     Timer temporizador = new Timer(10, new ActionListener() {
@@ -42,6 +43,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         Graphics2D g2 = (Graphics2D) buffer.getGraphics();
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
+        /////////////////////////////////////////
         contador ++;
         //DIBUJO DE GOLPE TODO EL BUFFER SOBRE EL JPANEL
         if (contador < 50) {
@@ -51,6 +53,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         } else {
             contador = 0;
         }
+        //DIBUJO LA NAVE
+        g2.drawImage(minave.imagen, minave.posX, minave.posY, null);
+        ///////////////////////////////////////////
         g2 = (Graphics2D) jPanel1.getGraphics();
         g2.drawImage(buffer, 0, 0, null);
 
@@ -66,6 +71,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         buffer.createGraphics();
         //ARRANCA EL TEMPORIZADOR PARA QUE EMPIECE EL JUEGO
         temporizador.start();
+        minave.posX = ANCHOPANTALLA/2 - minave.imagen.getWidth(this)/2;
+        minave.posY = ALTOPANTALLA -100;
     }
 
     /**
