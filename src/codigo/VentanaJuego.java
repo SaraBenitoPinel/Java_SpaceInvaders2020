@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.Timer;
 
@@ -27,6 +28,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     BufferedImage buffer = null;
     Marciano miMarciano = new Marciano(ANCHOPANTALLA);
     Nave minave = new Nave();
+    Disparo midisparo = new Disparo();
     //HILO DE EJECUCION NUEVO QUE SE ENCARGA DE REFRESCAR EL CONTENIDO DE LA PANTALLA 
     //(BUCLE DE ANIMACION DEL JUEGO)
     Timer temporizador = new Timer(10, new ActionListener() {
@@ -44,7 +46,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
         /////////////////////////////////////////
-        contador ++;
+        contador++;
         //DIBUJO DE GOLPE TODO EL BUFFER SOBRE EL JPANEL
         if (contador < 50) {
             g2.drawImage(miMarciano.imagen1, 10, 10, null);
@@ -55,8 +57,11 @@ public class VentanaJuego extends javax.swing.JFrame {
         }
         //DIBUJO LA NAVE
         g2.drawImage(minave.imagen, minave.posX, minave.posY, null);
+        g2.drawImage(midisparo.imagen, midisparo.posX, midisparo.posY, null);
+        minave.mueve();
+        midisparo.mueve();
         ///////////////////////////////////////////
-        g2 = (Graphics2D) jPanel1.getGraphics();
+        g2 = (Graphics2D) VentanaJuego.getGraphics();
         g2.drawImage(buffer, 0, 0, null);
 
     }
@@ -67,12 +72,12 @@ public class VentanaJuego extends javax.swing.JFrame {
     public VentanaJuego() {
         initComponents();
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
-        buffer = (BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);
+        buffer = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);
         buffer.createGraphics();
         //ARRANCA EL TEMPORIZADOR PARA QUE EMPIECE EL JUEGO
         temporizador.start();
-        minave.posX = ANCHOPANTALLA/2 - minave.imagen.getWidth(this)/2;
-        minave.posY = ALTOPANTALLA -100;
+        minave.posX = ANCHOPANTALLA / 2 - minave.imagen.getWidth(this) / 2;
+        minave.posY = ALTOPANTALLA - 100;
     }
 
     /**
@@ -84,18 +89,26 @@ public class VentanaJuego extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        VentanaJuego = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+        });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout VentanaJuegoLayout = new javax.swing.GroupLayout(VentanaJuego);
+        VentanaJuego.setLayout(VentanaJuegoLayout);
+        VentanaJuegoLayout.setHorizontalGroup(
+            VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 625, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        VentanaJuegoLayout.setVerticalGroup(
+            VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 409, Short.MAX_VALUE)
         );
 
@@ -103,15 +116,41 @@ public class VentanaJuego extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(VentanaJuego, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(VentanaJuego, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_LEFT:
+                minave.setPulsadoIzquierda(true);
+                break;
+            case KeyEvent.VK_RIGHT:
+                minave.setPulsadoDerecha(true);
+                break;
+            case KeyEvent.VK_SPACE:
+                midisparo.posicionDisparo(minave);
+                break;
+        }
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_LEFT:
+                minave.setPulsadoIzquierda(false);
+                break;
+            case KeyEvent.VK_RIGHT:
+                minave.setPulsadoDerecha(false);
+                break;
+
+        }
+    }//GEN-LAST:event_formKeyReleased
 
     /**
      * @param args the command line arguments
@@ -149,6 +188,6 @@ public class VentanaJuego extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel VentanaJuego;
     // End of variables declaration//GEN-END:variables
 }
