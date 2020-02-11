@@ -18,11 +18,7 @@ public class Nave {
     
     
     public Nave(){
-            try{
-                imagen=ImageIO.read(getClass().getResource("/imagenes/nave.png"));
-            }
-            catch(Exception e){
-            }
+          
     }
     
     public void mueve(){
