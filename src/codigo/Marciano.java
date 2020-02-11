@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author Angel Esquinas
+ * @author Sara Benito
  */
 public class Marciano {
 

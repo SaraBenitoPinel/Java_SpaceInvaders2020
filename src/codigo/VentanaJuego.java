@@ -21,7 +21,7 @@ import javax.swing.Timer;
 
 /**
  *
- * @author jorgecisneros
+ * @author Sara Benito
  */
 public class VentanaJuego extends javax.swing.JFrame {
 
