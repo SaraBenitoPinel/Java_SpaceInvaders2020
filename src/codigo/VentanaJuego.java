@@ -40,7 +40,8 @@ public class VentanaJuego extends javax.swing.JFrame {
     Marciano marciano = new Marciano(ANCHOPANTALLA);//inicializo el marciano
     Nave miNave = new Nave();
     Disparo miDisparo = new Disparo();
-
+    ArrayList<Disparo> listaDisparos = new ArrayList();
+    ArrayList<Explosion> listaExplosiones = new ArrayList();
     //EL ARRAY DE DOS DIMENSIONES QUE GUARDA LA LISTA DE MARCIANOS
     Marciano[][] listaMarcianos = new Marciano[filasMarcianos][columnasMarcianos];
     //DIRECCION EN LA QUE SE MUEVE EL GRUPO DE MARCIANOS
@@ -55,10 +56,6 @@ public class VentanaJuego extends javax.swing.JFrame {
             bucleDelJuego();
         }
     });
-    Marciano miMarciano = new Marciano(ANCHOPANTALLA);
-    Nave minave = new Nave();
-    Disparo midisparo = new Disparo();
-    ArrayList<Disparo> listaDisparos = new ArrayList();
 
     /**
      * Creates new form VentanaJuego
@@ -82,6 +79,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         }
         imagenes[20] = plantilla.getSubimage(0, 320, 66, 32); //SPRITE DE LA NAVE
         imagenes[21] = plantilla.getSubimage(66, 320, 64, 32);
+        imagenes[22] = plantilla.getSubimage(255, 320, 32, 32); //EXPLOSION PARTE B
+        imagenes[23] = plantilla.getSubimage(255, 289, 32, 32); //EXPLOSION PARTE A
+        imagenes[24] = plantilla.getSubimage(196, 252, 32, 32).getScaledInstance(32, 32, Image.SCALE_SMOOTH); //EXPLOSION PARTE C
 
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         VentanaJuego.setSize(ANCHOPANTALLA, ALTOPANTALLA);
@@ -141,7 +141,29 @@ public class VentanaJuego extends javax.swing.JFrame {
         }
     }
 
-    private void bucleDelJuego() {
+    private void pintaExplosiones(Graphics2D g2) {
+        //PINTA TODAS LAS EXPLOSIONES
+        Explosion explosionAux;
+        for (int i = 0; i < listaExplosiones.size(); i++) {
+            explosionAux = listaExplosiones.get(i);
+            explosionAux.tiempoDeVida--;
+            if (explosionAux.tiempoDeVida > 25) {
+                g2.drawImage(explosionAux.imagen1, explosionAux.posX, explosionAux.posY, null);
+            } else if (explosionAux.tiempoDeVida >10) {
+                g2.drawImage(explosionAux.imagen2, explosionAux.posX, explosionAux.posY, null);
+            }
+            if (explosionAux.tiempoDeVida > 5) {
+                g2.drawImage(explosionAux.imagen3, explosionAux.posX, explosionAux.posY, null);
+            }
+            //SI EL TIEMPO DE VIDA DE LA EXPLOSION ES MENOR O IGUAL A 0 LA ELIMINO
+            if (explosionAux.tiempoDeVida <= 0) {
+                listaExplosiones.remove(i);
+            }
+        }
+    }
+
+
+private void bucleDelJuego() {
         //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
         //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
         Graphics2D g2 = (Graphics2D) buffer.getGraphics();//borro todo lo que ahi en el buffer
@@ -154,6 +176,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         //DIBUJO LA NAVE
         g2.drawImage(miNave.imagen, miNave.posX, miNave.posY, null);
         pintaDisparos(g2);
+        pintaExplosiones(g2);
         miNave.mueve();
         chequeaColision();
         ///////////////////////////////////////////////////
@@ -184,6 +207,14 @@ public class VentanaJuego extends javax.swing.JFrame {
                     );
                     if (rectanguloDisparo.intersects(rectanguloMarciano)) {
                         //SI ENTRA AQUI ES PORQUE HAN CHOCADO UN MARCIANO Y EL DISPARO
+                        Explosion e = new Explosion();
+                        e.posX = listaMarcianos[i][j].posX;
+                        e.posY = listaMarcianos[i][j].posY;
+                        e.imagen1 = imagenes[23];
+                        e.imagen2 = imagenes[22];
+                        e.imagen3 = imagenes[24];
+                        listaExplosiones.add(e);
+                        e.sonidoExplosion.start();//SUENA EL SONIDO
                         listaMarcianos[i][j].posY = 2000;
                         listaDisparos.remove(k);
 
@@ -285,13 +316,33 @@ public class VentanaJuego extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego
+
+.class  
+
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego
+
+.class  
+
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego
+
+.class  
+
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego
+
+.class  
+
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
