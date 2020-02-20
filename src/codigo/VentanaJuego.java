@@ -6,6 +6,7 @@
 package codigo;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -27,17 +28,20 @@ import javax.swing.Timer;
 public class VentanaJuego extends javax.swing.JFrame {
 
     //LO QUE QUEREMOS QUE MIDA EL ANCHO Y EL LARGO DE LA PANTALLA
-    static int ANCHOPANTALLA = 800;
-    static int ALTOPANTALLA = 700;
+    static int ANCHOPANTALLA = 1000;
+    static int ALTOPANTALLA = 650;
     int filasMarcianos = 5;
     int columnasMarcianos = 10;
     int contador = 0;
+    int puntuacion = 0;
+
+    BufferedImage fondo = null; //FONDO
     BufferedImage buffer = null;
-    //buffer para guardar las imágenes de todos los marcianos
+    //BUFFER PARA GUARDAR LAS IMAGENES DE TODOS LOS MARCIANOS
     BufferedImage plantilla = null;
     Image[] imagenes = new Image[30];
-
-    Marciano marciano = new Marciano(ANCHOPANTALLA);//inicializo el marciano
+    Image imagen = null; //FONDO
+    Marciano marciano = new Marciano(ANCHOPANTALLA);//INICIALIZO EL MARCIANO
     Nave miNave = new Nave();
     Disparo miDisparo = new Disparo();
     ArrayList<Disparo> listaDisparos = new ArrayList();
@@ -61,10 +65,9 @@ public class VentanaJuego extends javax.swing.JFrame {
      * Creates new form VentanaJuego
      */
     public VentanaJuego() {
-
         initComponents();
-
         try {
+            imagen = ImageIO.read(getClass().getResource("/imagenes/luna.jpg"));
             plantilla = ImageIO.read(getClass().getResource("/imagenes/invaders2.png"));
         } catch (IOException ex) {
         }
@@ -85,9 +88,14 @@ public class VentanaJuego extends javax.swing.JFrame {
 
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         VentanaJuego.setSize(ANCHOPANTALLA, ALTOPANTALLA);
+        fondo = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);//PONGO EL FONDO
+        //PARA PONER EL FONDO
+        Graphics2D g2 = (Graphics2D) fondo.getGraphics();
+        g2.drawImage(imagen, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
+        
         buffer = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);//INICIALIZO EL BUFFER
         buffer.createGraphics();
-
+       
         temporizador.start();//ARRANCO EL TEMPORIZADOR
         miNave.imagen = imagenes[20];
         miNave.posX = ANCHOPANTALLA / 2 - miNave.imagen.getWidth(this) / 2;
@@ -149,7 +157,7 @@ public class VentanaJuego extends javax.swing.JFrame {
             explosionAux.tiempoDeVida--;
             if (explosionAux.tiempoDeVida > 25) {
                 g2.drawImage(explosionAux.imagen1, explosionAux.posX, explosionAux.posY, null);
-            } else if (explosionAux.tiempoDeVida >10) {
+            } else if (explosionAux.tiempoDeVida > 10) {
                 g2.drawImage(explosionAux.imagen2, explosionAux.posX, explosionAux.posY, null);
             }
             if (explosionAux.tiempoDeVida > 5) {
@@ -162,14 +170,14 @@ public class VentanaJuego extends javax.swing.JFrame {
         }
     }
 
-
-private void bucleDelJuego() {
+    private void bucleDelJuego() {
         //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
         //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
-        Graphics2D g2 = (Graphics2D) buffer.getGraphics();//borro todo lo que ahi en el buffer
-
-        g2.setColor(Color.BLACK);//doy el color negro a la pantalla
+        Graphics2D g2 = (Graphics2D) buffer.getGraphics();//BORRO TODO LO QUE HAY EN EL BUFFER
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
+        g2.drawImage(fondo, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
+        //g2.setColor(Color.BLACK);//POR SI EN VEZ DE FONDO QUIERO PONER UN COLOR
+        
         ///////////////////////////////////////////////////
         contador++;
         pintaMarcianos(g2);
@@ -221,6 +229,7 @@ private void bucleDelJuego() {
                     }
                 }
             }
+            puntuacion = puntuacion + 50;
         }
     }
 
@@ -317,33 +326,17 @@ private void bucleDelJuego() {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego
-
-.class  
-
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego
-
-.class  
-
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego
-
-.class  
-
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaJuego
-
-.class  
-
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaJuego.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
