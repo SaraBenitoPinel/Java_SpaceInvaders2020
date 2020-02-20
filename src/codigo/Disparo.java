@@ -17,16 +17,16 @@ public class Disparo {
     Image imagen = null;
     public int posX = 0;
     public int posY = 0;
-Clip sonidoDisparo; //SONIDOS DE TIPO .wap
-    
+    Clip sonidoDisparo; //SONIDOS DE TIPO .wap
+
     public Disparo() {
         try {
-            imagen = ImageIO.read(getClass().getResource("/imagenes/disparo.png"));
+            //imagen = ImageIO.read(getClass().getResource("/imagenes/disparo.png"));
             sonidoDisparo = AudioSystem.getClip();
-             sonidoDisparo.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/laser.wav")));
-        }catch (LineUnavailableException ex){  
-        }catch (IOException ex){    
-        }catch (UnsupportedAudioFileException ex){ 
+            sonidoDisparo.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/laser.wav")));
+        } catch (LineUnavailableException ex) {
+        } catch (IOException ex) {
+        } catch (UnsupportedAudioFileException ex) {
         }
     }
 
@@ -34,7 +34,6 @@ Clip sonidoDisparo; //SONIDOS DE TIPO .wap
         posY -= 5;
 
     }
-
     public void posicionaDisparo(Nave _nave) {
         posX = _nave.posX
                 + _nave.imagen.getWidth(null) / 2

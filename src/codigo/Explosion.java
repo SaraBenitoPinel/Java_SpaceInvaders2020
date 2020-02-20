@@ -17,22 +17,23 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @author Sara Benito
  */
 public class Explosion {
+
     Image imagen1 = null;
     Image imagen2 = null;
     Image imagen3 = null;
-    public int posX= 0;
-    public int posY= 0;
-    
+    public int posX = 0;
+    public int posY = 0;
+
     public int tiempoDeVida = 50;
     Clip sonidoExplosion; //SONIDOS DE TIPO .wap
-    
-    public Explosion(){
-        try{
-             sonidoExplosion = AudioSystem.getClip();
-             sonidoExplosion.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/explosion.wav")));
-        }catch (LineUnavailableException ex){  
-        }catch (IOException ex){    
-        }catch (UnsupportedAudioFileException ex){
+
+    public Explosion() {
+        try {
+            sonidoExplosion = AudioSystem.getClip();
+            sonidoExplosion.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/explosion.wav")));
+        } catch (LineUnavailableException ex) {
+        } catch (IOException ex) {
+        } catch (UnsupportedAudioFileException ex) {
         }
     }
 }

@@ -33,7 +33,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     int filasMarcianos = 5;
     int columnasMarcianos = 10;
     int contador = 0;
-    int puntuacion = 0;
+    int puntuacion = 0; //PARA CUANDO DAS A UN MARCIANO
 
     BufferedImage fondo = null; //FONDO
     BufferedImage buffer = null;
@@ -43,7 +43,6 @@ public class VentanaJuego extends javax.swing.JFrame {
     Image imagen = null; //FONDO
     Marciano marciano = new Marciano(ANCHOPANTALLA);//INICIALIZO EL MARCIANO
     Nave miNave = new Nave();
-    Disparo miDisparo = new Disparo();
     ArrayList<Disparo> listaDisparos = new ArrayList();
     ArrayList<Explosion> listaExplosiones = new ArrayList();
     //EL ARRAY DE DOS DIMENSIONES QUE GUARDA LA LISTA DE MARCIANOS
@@ -66,6 +65,8 @@ public class VentanaJuego extends javax.swing.JFrame {
      */
     public VentanaJuego() {
         initComponents();
+        marcador.getVisibleRect();
+        marcador.setText(""+ puntuacion);//MOSTRAR EL NUMERO EN EL MARCADOR
         try {
             imagen = ImageIO.read(getClass().getResource("/imagenes/luna.jpg"));
             plantilla = ImageIO.read(getClass().getResource("/imagenes/invaders2.png"));
@@ -85,6 +86,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         imagenes[22] = plantilla.getSubimage(255, 320, 32, 32); //EXPLOSION PARTE B
         imagenes[23] = plantilla.getSubimage(255, 289, 32, 32); //EXPLOSION PARTE A
         imagenes[24] = plantilla.getSubimage(194, 320, 64, 32).getScaledInstance(32, 32, Image.SCALE_SMOOTH); //EXPLOSION PARTE C
+        imagenes[25] = plantilla.getSubimage(265, 128, 16, 32).getScaledInstance(11, 21, Image.SCALE_SMOOTH);//DISPARO
 
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         VentanaJuego.setSize(ANCHOPANTALLA, ALTOPANTALLA);
@@ -92,11 +94,12 @@ public class VentanaJuego extends javax.swing.JFrame {
         //PARA PONER EL FONDO
         Graphics2D g2 = (Graphics2D) fondo.getGraphics();
         g2.drawImage(imagen, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
-        
+
         buffer = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);//INICIALIZO EL BUFFER
         buffer.createGraphics();
-       
+
         temporizador.start();//ARRANCO EL TEMPORIZADOR
+        //PONEMOS LA IMAGEN A LA NAVE
         miNave.imagen = imagenes[20];
         miNave.posX = ANCHOPANTALLA / 2 - miNave.imagen.getWidth(this) / 2;
         miNave.posY = ALTOPANTALLA - 100;
@@ -110,7 +113,6 @@ public class VentanaJuego extends javax.swing.JFrame {
                 listaMarcianos[i][j].posY = i * (10 + listaMarcianos[i][j].imagen1.getHeight(null));
             }
         }
-        miDisparo.posY = -2000;
     }
 
     private void pintaMarcianos(Graphics2D _g2) {
@@ -177,7 +179,6 @@ public class VentanaJuego extends javax.swing.JFrame {
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
         g2.drawImage(fondo, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
         //g2.setColor(Color.BLACK);//POR SI EN VEZ DE FONDO QUIERO PONER UN COLOR
-        
         ///////////////////////////////////////////////////
         contador++;
         pintaMarcianos(g2);
@@ -215,6 +216,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                     );
                     if (rectanguloDisparo.intersects(rectanguloMarciano)) {
                         //SI ENTRA AQUI ES PORQUE HAN CHOCADO UN MARCIANO Y EL DISPARO
+
                         Explosion e = new Explosion();
                         e.posX = listaMarcianos[i][j].posX;
                         e.posY = listaMarcianos[i][j].posY;
@@ -225,11 +227,12 @@ public class VentanaJuego extends javax.swing.JFrame {
                         e.sonidoExplosion.start();//SUENA EL SONIDO
                         listaMarcianos[i][j].posY = 2000;
                         listaDisparos.remove(k);
-
+                        puntuacion = puntuacion + 50;//PARA CADA VEZ QUE GOLPE UN MARCIANO SUMA PUNTUACION
+                        marcador.setText(""+ puntuacion);
                     }
                 }
             }
-            puntuacion = puntuacion + 50;
+
         }
     }
 
@@ -243,6 +246,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     private void initComponents() {
 
         VentanaJuego = new javax.swing.JPanel();
+        marcador = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -254,15 +258,24 @@ public class VentanaJuego extends javax.swing.JFrame {
             }
         });
 
+        marcador.setBackground(new java.awt.Color(255, 255, 255));
+        marcador.setForeground(new java.awt.Color(255, 255, 255));
+        marcador.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        marcador.setOpaque(true);
+
         javax.swing.GroupLayout VentanaJuegoLayout = new javax.swing.GroupLayout(VentanaJuego);
         VentanaJuego.setLayout(VentanaJuegoLayout);
         VentanaJuegoLayout.setHorizontalGroup(
             VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 420, Short.MAX_VALUE)
+            .addGroup(VentanaJuegoLayout.createSequentialGroup()
+                .addComponent(marcador, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 359, Short.MAX_VALUE))
         );
         VentanaJuegoLayout.setVerticalGroup(
             VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 376, Short.MAX_VALUE)
+            .addGroup(VentanaJuegoLayout.createSequentialGroup()
+                .addComponent(marcador, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 347, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -290,7 +303,9 @@ public class VentanaJuego extends javax.swing.JFrame {
             case KeyEvent.VK_SPACE:
                 Disparo d = new Disparo();
                 d.sonidoDisparo.start();
-                d.posicionaDisparo(miNave);
+                d.imagen = imagenes[25];
+                d.posicionaDisparo(miNave); 
+                
                 //AGREGAMOS EL DISPARO A LA LISTA DE DISPAROS
                 listaDisparos.add(d);
                 break;
@@ -350,5 +365,6 @@ public class VentanaJuego extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel VentanaJuego;
+    private javax.swing.JLabel marcador;
     // End of variables declaration//GEN-END:variables
 }
