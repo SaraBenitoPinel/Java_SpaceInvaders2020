@@ -1,7 +1,12 @@
 package codigo;
 
 import java.awt.Image;
+import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -12,11 +17,16 @@ public class Disparo {
     Image imagen = null;
     public int posX = 0;
     public int posY = 0;
-
+Clip sonidoDisparo; //SONIDOS DE TIPO .wap
+    
     public Disparo() {
         try {
             imagen = ImageIO.read(getClass().getResource("/imagenes/disparo.png"));
-        } catch (Exception e) {
+            sonidoDisparo = AudioSystem.getClip();
+             sonidoDisparo.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/laser.wav")));
+        }catch (LineUnavailableException ex){  
+        }catch (IOException ex){    
+        }catch (UnsupportedAudioFileException ex){ 
         }
     }
 

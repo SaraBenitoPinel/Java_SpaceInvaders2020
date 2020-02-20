@@ -81,7 +81,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         imagenes[21] = plantilla.getSubimage(66, 320, 64, 32);
         imagenes[22] = plantilla.getSubimage(255, 320, 32, 32); //EXPLOSION PARTE B
         imagenes[23] = plantilla.getSubimage(255, 289, 32, 32); //EXPLOSION PARTE A
-        imagenes[24] = plantilla.getSubimage(196, 252, 32, 32).getScaledInstance(32, 32, Image.SCALE_SMOOTH); //EXPLOSION PARTE C
+        imagenes[24] = plantilla.getSubimage(194, 320, 64, 32).getScaledInstance(32, 32, Image.SCALE_SMOOTH); //EXPLOSION PARTE C
 
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         VentanaJuego.setSize(ANCHOPANTALLA, ALTOPANTALLA);
@@ -280,6 +280,7 @@ private void bucleDelJuego() {
                 break;
             case KeyEvent.VK_SPACE:
                 Disparo d = new Disparo();
+                d.sonidoDisparo.start();
                 d.posicionaDisparo(miNave);
                 //AGREGAMOS EL DISPARO A LA LISTA DE DISPAROS
                 listaDisparos.add(d);
