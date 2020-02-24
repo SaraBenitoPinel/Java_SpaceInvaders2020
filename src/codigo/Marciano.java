@@ -31,9 +31,9 @@ public class Marciano {
     //método para mover a la nave 
     public void mueve(boolean direccion) {
         if (direccion) {
-            posX++;
+            posX+=4;
         } else {
-            posX--;
+            posX-=4;
         }
     }
 }

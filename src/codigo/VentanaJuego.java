@@ -6,9 +6,9 @@
 package codigo;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,8 +16,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
@@ -33,7 +31,11 @@ public class VentanaJuego extends javax.swing.JFrame {
     int filasMarcianos = 5;
     int columnasMarcianos = 10;
     int contador = 0;
-    int puntuacion = 0; //PARA CUANDO DAS A UN MARCIANO
+    //PUNTUACION
+    public static Label marcador = new Label();
+    int puntuacion = 0;
+    //PARA FINALIZAR EL JUEGO
+    boolean seAcabo = false;
 
     BufferedImage fondo = null; //FONDO
     BufferedImage buffer = null;
@@ -65,8 +67,6 @@ public class VentanaJuego extends javax.swing.JFrame {
      */
     public VentanaJuego() {
         initComponents();
-        marcador.getVisibleRect();
-        marcador.setText(""+ puntuacion);//MOSTRAR EL NUMERO EN EL MARCADOR
         try {
             imagen = ImageIO.read(getClass().getResource("/imagenes/luna.jpg"));
             plantilla = ImageIO.read(getClass().getResource("/imagenes/invaders2.png"));
@@ -94,9 +94,15 @@ public class VentanaJuego extends javax.swing.JFrame {
         //PARA PONER EL FONDO
         Graphics2D g2 = (Graphics2D) fondo.getGraphics();
         g2.drawImage(imagen, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
-
         buffer = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);//INICIALIZO EL BUFFER
         buffer.createGraphics();
+        //PUNTUACION
+        marcador.setForeground(Color.WHITE);
+        marcador.setBackground(Color.BLACK);
+        marcador.setBounds(0, 0, 100, 30);
+        marcador.setText("0");
+        VentanaJuego.add(marcador);
+        //System.out.println(puntuacion);
 
         temporizador.start();//ARRANCO EL TEMPORIZADOR
         //PONEMOS LA IMAGEN A LA NAVE
@@ -173,31 +179,36 @@ public class VentanaJuego extends javax.swing.JFrame {
     }
 
     private void bucleDelJuego() {
-        //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
-        //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
         Graphics2D g2 = (Graphics2D) buffer.getGraphics();//BORRO TODO LO QUE HAY EN EL BUFFER
-        g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
-        g2.drawImage(fondo, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
-        //g2.setColor(Color.BLACK);//POR SI EN VEZ DE FONDO QUIERO PONER UN COLOR
-        ///////////////////////////////////////////////////
-        contador++;
-        pintaMarcianos(g2);
-        //DIBUJO LA NAVE
-        g2.drawImage(miNave.imagen, miNave.posX, miNave.posY, null);
-        pintaDisparos(g2);
-        pintaExplosiones(g2);
-        miNave.mueve();
-        chequeaColision();
+        if (!seAcabo) {
+            //ESTE METODO GOBIERNA EL REDIBUJADO DE LOS OBJETOS EN EL JPANEL1
+            //PRIMERO BORRO TODO LO QUE HAY EN EL BUFFER
+            g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
+            g2.drawImage(fondo, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
+            //g2.setColor(Color.BLACK);//POR SI EN VEZ DE FONDO QUIERO PONER UN COLOR
+            ///////////////////////////////////////////////////
+            contador++;
+            pintaMarcianos(g2);
+            //DIBUJO LA NAVE
+            g2.drawImage(miNave.imagen, miNave.posX, miNave.posY, null);
+            pintaDisparos(g2);
+            pintaExplosiones(g2);
+            miNave.mueve();
+            chequeaColision();
+        } else {
+         imagenes[30] = plantilla.getSubimage(133, 194, 66, 32);
+                    miNave.imagen = imagenes[30];
+        }
         ///////////////////////////////////////////////////
         g2 = (Graphics2D) VentanaJuego.getGraphics();//DIBUJO DE GOLPE EL BUFFER SOBRE EL JPANEL
         g2.drawImage(buffer, 0, 0, null);
-
     }
 
     //CHEQUEA SI UN DISPARO Y UN MARCIANO COLISIONAN
     private void chequeaColision() {
         Rectangle2D.Double rectanguloMarciano = new Rectangle2D.Double();
         Rectangle2D.Double rectanguloDisparo = new Rectangle2D.Double();
+        Rectangle2D.Double rectangulomiNave = new Rectangle2D.Double();
 
         for (int k = 0; k < listaDisparos.size(); k++) {
             //CALCULO EL RECTANGULO QUE CONTIENE AL DISPARO
@@ -216,7 +227,6 @@ public class VentanaJuego extends javax.swing.JFrame {
                     );
                     if (rectanguloDisparo.intersects(rectanguloMarciano)) {
                         //SI ENTRA AQUI ES PORQUE HAN CHOCADO UN MARCIANO Y EL DISPARO
-
                         Explosion e = new Explosion();
                         e.posX = listaMarcianos[i][j].posX;
                         e.posY = listaMarcianos[i][j].posY;
@@ -227,12 +237,17 @@ public class VentanaJuego extends javax.swing.JFrame {
                         e.sonidoExplosion.start();//SUENA EL SONIDO
                         listaMarcianos[i][j].posY = 2000;
                         listaDisparos.remove(k);
-                        puntuacion = puntuacion + 50;//PARA CADA VEZ QUE GOLPE UN MARCIANO SUMA PUNTUACION
-                        marcador.setText(""+ puntuacion);
+                        puntuacion += 50;
+                        marcador.setText("" + puntuacion);
                     }
+                 rectangulomiNave.setFrame(miNave.posX, miNave.posY, miNave.imagen.getWidth(null),
+                        miNave.imagen.getHeight(null));
+                if (rectanguloMarciano.intersects(rectangulomiNave)) {
+                    seAcabo = true;
+                    System.out.print("BASTA");
                 }
             }
-
+            }
         }
     }
 
@@ -246,7 +261,6 @@ public class VentanaJuego extends javax.swing.JFrame {
     private void initComponents() {
 
         VentanaJuego = new javax.swing.JPanel();
-        marcador = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -258,24 +272,15 @@ public class VentanaJuego extends javax.swing.JFrame {
             }
         });
 
-        marcador.setBackground(new java.awt.Color(255, 255, 255));
-        marcador.setForeground(new java.awt.Color(255, 255, 255));
-        marcador.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        marcador.setOpaque(true);
-
         javax.swing.GroupLayout VentanaJuegoLayout = new javax.swing.GroupLayout(VentanaJuego);
         VentanaJuego.setLayout(VentanaJuegoLayout);
         VentanaJuegoLayout.setHorizontalGroup(
             VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(VentanaJuegoLayout.createSequentialGroup()
-                .addComponent(marcador, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 359, Short.MAX_VALUE))
+            .addGap(0, 420, Short.MAX_VALUE)
         );
         VentanaJuegoLayout.setVerticalGroup(
             VentanaJuegoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(VentanaJuegoLayout.createSequentialGroup()
-                .addComponent(marcador, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 347, Short.MAX_VALUE))
+            .addGap(0, 376, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -304,8 +309,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                 Disparo d = new Disparo();
                 d.sonidoDisparo.start();
                 d.imagen = imagenes[25];
-                d.posicionaDisparo(miNave); 
-                
+                d.posicionaDisparo(miNave);
                 //AGREGAMOS EL DISPARO A LA LISTA DE DISPAROS
                 listaDisparos.add(d);
                 break;
@@ -365,6 +369,5 @@ public class VentanaJuego extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel VentanaJuego;
-    private javax.swing.JLabel marcador;
     // End of variables declaration//GEN-END:variables
 }

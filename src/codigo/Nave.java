@@ -17,7 +17,6 @@ public class Nave {
     private boolean pulsadoDerecha = false;
 
     public Nave() {
-
     }
 
     public void mueve() {
