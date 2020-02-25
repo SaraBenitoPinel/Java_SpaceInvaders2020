@@ -25,15 +25,6 @@ public class Explosion {
     public int posY = 0;
 
     public int tiempoDeVida = 50;
-    Clip sonidoExplosion; //SONIDOS DE TIPO .wap
-
-    public Explosion() {
-        try {
-            sonidoExplosion = AudioSystem.getClip();
-            sonidoExplosion.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/explosion.wav")));
-        } catch (LineUnavailableException ex) {
-        } catch (IOException ex) {
-        } catch (UnsupportedAudioFileException ex) {
-        }
-    }
 }
+
+   

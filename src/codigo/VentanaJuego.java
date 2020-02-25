@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.Timer;
 
 /**
@@ -41,8 +43,9 @@ public class VentanaJuego extends javax.swing.JFrame {
     BufferedImage buffer = null;
     //BUFFER PARA GUARDAR LAS IMAGENES DE TODOS LOS MARCIANOS
     BufferedImage plantilla = null;
-    Image[] imagenes = new Image[30];
+    Image[] imagenes = new Image[31];
     Image imagen = null; //FONDO
+    Image fin = null; //FINAL
     Marciano marciano = new Marciano(ANCHOPANTALLA);//INICIALIZO EL MARCIANO
     Nave miNave = new Nave();
     ArrayList<Disparo> listaDisparos = new ArrayList();
@@ -81,6 +84,7 @@ public class VentanaJuego extends javax.swing.JFrame {
 
             }
         }
+
         imagenes[20] = plantilla.getSubimage(0, 320, 66, 32); //SPRITE DE LA NAVE
         imagenes[21] = plantilla.getSubimage(66, 320, 64, 32);
         imagenes[22] = plantilla.getSubimage(255, 320, 32, 32); //EXPLOSION PARTE B
@@ -104,6 +108,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         VentanaJuego.add(marcador);
         //System.out.println(puntuacion);
 
+        //SONIDO FONDO
+        suena("/sonidos/musicafondo.wav");
         temporizador.start();//ARRANCO EL TEMPORIZADOR
         //PONEMOS LA IMAGEN A LA NAVE
         miNave.imagen = imagenes[20];
@@ -129,7 +135,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                     direccionMarcianos = !direccionMarcianos;
                     for (int k = 0; k < filasMarcianos; k++) {
                         for (int m = 0; m < columnasMarcianos; m++) {
-                            listaMarcianos[k][m].posY += listaMarcianos[k][m].imagen1.getHeight(null);
+                            listaMarcianos[k][m].posY += 50;
                         }
                     }
                 }
@@ -141,6 +147,23 @@ public class VentanaJuego extends javax.swing.JFrame {
                     contador = 0;
                 }
             }
+        }
+    }
+
+    private void suena(String cancion) {
+        try {
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(getClass().getResource(cancion)));
+            clip.loop(0);
+            Thread one = new Thread() {
+                public void run() {
+                    while (clip.getFramePosition() < clip.getFrameLength()) {
+                        Thread.yield();
+                    }
+                }
+            };
+            one.start();
+        } catch (Exception e) {
         }
     }
 
@@ -196,10 +219,13 @@ public class VentanaJuego extends javax.swing.JFrame {
             miNave.mueve();
             chequeaColision();
         } else {
-         imagenes[30] = plantilla.getSubimage(133, 194, 66, 32);
-                    miNave.imagen = imagenes[30];
+            try {
+                fin = ImageIO.read(getClass().getResource("/imagenes/fin.jpg"));
+            } catch (Exception e) {}
+            fondo = (BufferedImage) VentanaJuego.createImage(ANCHOPANTALLA, ALTOPANTALLA);//PONGO EL FONDO DEL FINAL
+            g2.drawImage(fin, 0, 0, VentanaJuego.getWidth(), VentanaJuego.getHeight(), null);
         }
-        ///////////////////////////////////////////////////
+        /////////////////////////////////////////////////
         g2 = (Graphics2D) VentanaJuego.getGraphics();//DIBUJO DE GOLPE EL BUFFER SOBRE EL JPANEL
         g2.drawImage(buffer, 0, 0, null);
     }
@@ -234,19 +260,33 @@ public class VentanaJuego extends javax.swing.JFrame {
                         e.imagen2 = imagenes[22];
                         e.imagen3 = imagenes[24];
                         listaExplosiones.add(e);
-                        e.sonidoExplosion.start();//SUENA EL SONIDO
+                        suena("/sonidos/explosion.wav");//SUENA EL SONIDO
                         listaMarcianos[i][j].posY = 2000;
                         listaDisparos.remove(k);
                         puntuacion += 50;
                         marcador.setText("" + puntuacion);
                     }
-                 rectangulomiNave.setFrame(miNave.posX, miNave.posY, miNave.imagen.getWidth(null),
+
+                }
+            }
+        }
+        for (int i = 0; i < filasMarcianos; i++) {
+            for (int j = 0; j < columnasMarcianos; j++) {
+                //CALCULO EL RECTANGULO CORRESPONDIENTE AL MARCIANO QUE ESTOY COMPROBANDO
+                rectanguloMarciano.setFrame(listaMarcianos[i][j].posX,
+                        listaMarcianos[i][j].posY,
+                        listaMarcianos[i][j].imagen1.getWidth(null),
+                        listaMarcianos[i][j].imagen1.getHeight(null)
+                );
+
+                rectangulomiNave.setFrame(miNave.posX, miNave.posY, miNave.imagen.getWidth(null),
                         miNave.imagen.getHeight(null));
                 if (rectanguloMarciano.intersects(rectangulomiNave)) {
                     seAcabo = true;
+                    imagenes[30] = plantilla.getSubimage(133, 194, 66, 32);
+                    miNave.imagen = imagenes[30];
                     System.out.print("BASTA");
                 }
-            }
             }
         }
     }
@@ -307,7 +347,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                 break;
             case KeyEvent.VK_SPACE:
                 Disparo d = new Disparo();
-                d.sonidoDisparo.start();
+                suena("/sonidos/laser.wav");
                 d.imagen = imagenes[25];
                 d.posicionaDisparo(miNave);
                 //AGREGAMOS EL DISPARO A LA LISTA DE DISPAROS

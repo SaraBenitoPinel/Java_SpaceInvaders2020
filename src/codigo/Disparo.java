@@ -20,14 +20,7 @@ public class Disparo {
     Clip sonidoDisparo; //SONIDOS DE TIPO .wap
 
     public Disparo() {
-        try {
-            //imagen = ImageIO.read(getClass().getResource("/imagenes/disparo.png"));
-            sonidoDisparo = AudioSystem.getClip();
-            sonidoDisparo.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/laser.wav")));
-        } catch (LineUnavailableException ex) {
-        } catch (IOException ex) {
-        } catch (UnsupportedAudioFileException ex) {
-        }
+ 
     }
 
     public void mueve() {
